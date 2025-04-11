@@ -6,43 +6,58 @@
   <title>Guest Refreshment Order</title>
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #f7f7f7;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
       padding: 20px;
+      margin: 0;
     }
     .container {
-      max-width: 400px;
+      max-width: 450px;
       margin: 50px auto;
       background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-    h2 {
+    h1, h2 {
       text-align: center;
+      color: #333;
     }
     label {
       font-weight: bold;
       display: block;
       margin-top: 20px;
+      color: #333;
     }
-    select, button {
+    input, select, button {
       width: 100%;
       padding: 10px;
       margin-top: 10px;
       font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
     button {
-      background: #25d366;
+      background-color: #25d366;
       color: white;
       border: none;
+      margin-top: 30px;
+      font-weight: bold;
       cursor: pointer;
+    }
+    button:hover {
+      background-color: #1ebe5d;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Welcome! Order Your Drink</h2>
+    <h1>Welcome to Emotron</h1>
+    <h2>Please place your refreshment order</h2>
+
+    <label for="name">Your Name:</label>
+    <input type="text" id="name" placeholder="Enter your name" required />
+
     <label for="drink">Choose your drink:</label>
     <select id="drink">
       <option value="Cappuccino">Cappuccino</option>
@@ -51,6 +66,7 @@
       <option value="Espresso">Espresso</option>
       <option value="Black Coffee">Black Coffee</option>
       <option value="Black Tea">Black Tea</option>
+      <option value="Water">Water</option>
     </select>
 
     <label for="sugar">Sugar preference:</label>
@@ -64,15 +80,13 @@
 
   <script>
     function sendOrder() {
+      const name = document.getElementById('name').value.trim();
       const drink = document.getElementById('drink').value;
       const sugar = document.getElementById('sugar').value;
-      const message = `New Guest Order:\\nDrink: ${drink}\\nSugar: ${sugar}`;
 
-      const phone = '971529436936'; // 🔁 Replace with your WhatsApp number
-      const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+      if (!name) {
+        alert('Please enter your name!');
+        return;
+      }
 
-      window.open(url, '_blank');
-    }
-  </script>
-</body>
-</html>
+      const message = `New Guest Order:%0AName: ${name}%0ADrink: ${
