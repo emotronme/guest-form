@@ -59,7 +59,7 @@
     <input type="text" id="name" placeholder="Enter your name" required />
 
     <label for="drink">Choose your drink:</label>
-    <select id="drink">
+    <select id="drink" onchange="toggleSugar()">
       <option value="Cappuccino">Cappuccino</option>
       <option value="Flat White">Flat White</option>
       <option value="Americano">Americano</option>
@@ -69,7 +69,7 @@
       <option value="Water">Water</option>
     </select>
 
-    <label for="sugar">Sugar preference:</label>
+    <label for="sugar" id="sugarLabel">Sugar preference:</label>
     <select id="sugar">
       <option value="With Sugar">With Sugar</option>
       <option value="Without Sugar">Without Sugar</option>
@@ -79,14 +79,36 @@
   </div>
 
   <script>
+    function toggleSugar() {
+      const drink = document.getElementById('drink').value;
+      const sugarLabel = document.getElementById('sugarLabel');
+      const sugar = document.getElementById('sugar');
+      
+      if (drink === "Water") {
+        sugarLabel.style.display = "none";
+        sugar.style.display = "none";
+      } else {
+        sugarLabel.style.display = "block";
+        sugar.style.display = "block";
+      }
+    }
+
     function sendOrder() {
       const name = document.getElementById('name').value.trim();
       const drink = document.getElementById('drink').value;
-      const sugar = document.getElementById('sugar').value;
+      const sugar = drink === "Water" ? "No Sugar" : document.getElementById('sugar').value;
 
       if (!name) {
         alert('Please enter your name!');
         return;
       }
 
-      const message = `New Guest Order:%0AName: ${name}%0ADrink: ${
+      const message = `New Guest Order:%0AName: ${name}%0ADrink: ${drink}%0ASugar: ${sugar}`;
+      const phone = '971501234567'; // Replace with your WhatsApp Business number
+
+      const url = `https://api.whatsapp.com/send?phone=${phone}&text=${message}`;
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>
