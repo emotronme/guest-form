@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guest Refreshment Order</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f7f7f7;
+      padding: 20px;
+    }
+    .container {
+      max-width: 400px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 20px;
+    }
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    button {
+      background: #25d366;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome! Order Your Drink</h2>
+    <label for="drink">Choose your drink:</label>
+    <select id="drink">
+      <option value="Cappuccino">Cappuccino</option>
+      <option value="Flat White">Flat White</option>
+      <option value="Americano">Americano</option>
+      <option value="Espresso">Espresso</option>
+      <option value="Black Coffee">Black Coffee</option>
+      <option value="Black Tea">Black Tea</option>
+    </select>
+
+    <label for="sugar">Sugar preference:</label>
+    <select id="sugar">
+      <option value="With Sugar">With Sugar</option>
+      <option value="Without Sugar">Without Sugar</option>
+    </select>
+
+    <button onclick="sendOrder()">Submit Order</button>
+  </div>
+
+  <script>
+    function sendOrder() {
+      const drink = document.getElementById('drink').value;
+      const sugar = document.getElementById('sugar').value;
+      const message = `New Guest Order:\\nDrink: ${drink}\\nSugar: ${sugar}`;
+
+      const phone = '971501234567'; // 🔁 Replace with your WhatsApp number
+      const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>
