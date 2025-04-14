@@ -62,22 +62,20 @@
       margin-bottom: 20px;
       background: #f9f9f9;
     }
-    .remove-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #ff4d4d;
+    .remove-guest-btn {
+      background-color: #e74c3c;
       color: white;
       border: none;
-      font-size: 18px;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
+      margin-top: 20px;
+      font-weight: bold;
       cursor: pointer;
-      line-height: 1;
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      font-size: 16px;
     }
-    .remove-btn:hover {
-      background-color: #cc0000;
+    .remove-guest-btn:hover {
+      background-color: #c0392b;
     }
   </style>
 </head>
@@ -92,7 +90,7 @@
 
     <form id="orderForm">
       <div id="guestsContainer">
-        <!-- Guest entries go here -->
+        <!-- Guest blocks will be injected here -->
       </div>
 
       <button type="button" onclick="addGuest()">+ Add Another Guest</button>
@@ -106,8 +104,6 @@
       guestBlock.className = 'guest-block';
 
       guestBlock.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeGuest(this)">✕</button>
-
         <label>Guest Name:</label>
         <input type="text" name="name" placeholder="Enter guest name" required>
 
@@ -132,6 +128,8 @@
 
         <label>Special instructions:</label>
         <textarea name="instructions" rows="2" placeholder="Optional..."></textarea>
+
+        <button type="button" class="remove-guest-btn" onclick="removeGuest(this)">Remove Guest</button>
       `;
 
       document.getElementById('guestsContainer').appendChild(guestBlock);
@@ -144,11 +142,7 @@
     function toggleSugar(selectEl) {
       const drink = selectEl.value;
       const sugarContainer = selectEl.closest('.guest-block').querySelector('.sugar-container');
-      if (drink === "Water") {
-        sugarContainer.style.display = "none";
-      } else {
-        sugarContainer.style.display = "block";
-      }
+      sugarContainer.style.display = (drink === "Water") ? "none" : "block";
     }
 
     document.getElementById("orderForm").addEventListener("submit", function(e) {
