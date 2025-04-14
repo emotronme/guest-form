@@ -13,7 +13,7 @@
     }
     .container {
       max-width: 600px;
-      margin: 40px auto;
+      margin: 50px auto;
       background: white;
       padding: 30px;
       border-radius: 10px;
@@ -26,143 +26,142 @@
     label {
       font-weight: bold;
       display: block;
-      margin-top: 15px;
+      margin-top: 20px;
       color: #333;
     }
-    input, select, textarea, button {
+    input, select, textarea {
       width: 100%;
       padding: 10px;
-      margin-top: 8px;
+      margin-top: 10px;
       font-size: 16px;
       border-radius: 5px;
       border: 1px solid #ccc;
     }
     button {
-      background-color: #25a18e;
+      background-color: #007BFF;
       color: white;
       border: none;
-      margin-top: 25px;
+      margin-top: 30px;
+      padding: 12px;
+      font-size: 16px;
       font-weight: bold;
+      border-radius: 5px;
       cursor: pointer;
+      width: 100%;
     }
     button:hover {
-      background-color: #1e8a78;
+      background-color: #0056b3;
     }
     .guest-block {
-      border: 1px solid #ccc;
-      padding: 20px;
-      margin-bottom: 20px;
+      border: 1px dashed #ccc;
+      padding: 15px;
+      margin-top: 20px;
       border-radius: 8px;
-      background: #fafafa;
-    }
-    .add-btn {
-      background-color: #444;
-    }
-    .add-btn:hover {
-      background-color: #333;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Welcome to Emotron</h1>
-    <h2>Please place your refreshment order</h2>
+    <h2>Guest Refreshment Order</h2>
 
     <form id="orderForm">
-      <div id="guestsContainer">
-        <!-- Guest blocks will appear here -->
+      <div id="guestContainer">
+        <div class="guest-block">
+          <label>Guest Name:</label>
+          <input type="text" name="name" required>
+
+          <label>Drink:</label>
+          <select name="drink" onchange="toggleSugar(this)">
+            <option value="Cappuccino">Cappuccino</option>
+            <option value="Flat White">Flat White</option>
+            <option value="Americano">Americano</option>
+            <option value="Espresso">Espresso</option>
+            <option value="Black Coffee">Black Coffee</option>
+            <option value="Black Tea">Black Tea</option>
+            <option value="Water">Water</option>
+          </select>
+
+          <label>Sugar:</label>
+          <select name="sugar">
+            <option value="With Sugar">With Sugar</option>
+            <option value="Without Sugar">Without Sugar</option>
+          </select>
+
+          <label>Special Instructions:</label>
+          <textarea name="instructions" placeholder="Any specific request..."></textarea>
+        </div>
       </div>
 
-      <button type="button" class="add-btn" onclick="addGuest()">+ Add Another Guest</button>
-      <button type="button" onclick="submitOrders()">Submit Orders</button>
+      <button type="button" onclick="addGuest()">+ Add Another Guest</button>
+      <button type="submit">Submit All Orders</button>
     </form>
   </div>
 
   <script>
-    let guestCount = 0;
+    const scriptURL = https://script.google.com/macros/s/AKfycbxtxtTr1ip8o9M9OS26PeUFxTjha3CuA8-oIogU-VVzLim9329ff7gy8FdUrgW3jcabtg/exec // Replace this with your Apps Script Web App URL
+
+    function toggleSugar(select) {
+      const sugarSelect = select.parentNode.querySelector('select[name="sugar"]');
+      if (select.value === 'Water') {
+        sugarSelect.style.display = 'none';
+      } else {
+        sugarSelect.style.display = 'block';
+      }
+    }
 
     function addGuest() {
-      const container = document.getElementById('guestsContainer');
-      const id = guestCount++;
+      const guestContainer = document.getElementById('guestContainer');
+      const newBlock = guestContainer.firstElementChild.cloneNode(true);
 
-      const guestDiv = document.createElement('div');
-      guestDiv.className = 'guest-block';
-      guestDiv.id = `guest-${id}`;
+      // Clear the fields
+      newBlock.querySelectorAll('input, select, textarea').forEach(el => {
+        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        else el.value = '';
+        el.style.display = 'block';
+      });
 
-      guestDiv.innerHTML = `
-        <label for="name-${id}">Guest Name:</label>
-        <input type="text" id="name-${id}" required />
-
-        <label for="drink-${id}">Choose Drink:</label>
-        <select id="drink-${id}" onchange="toggleSugar(${id})">
-          <option value="Cappuccino">Cappuccino</option>
-          <option value="Flat White">Flat White</option>
-          <option value="Americano">Americano</option>
-          <option value="Espresso">Espresso</option>
-          <option value="Black Coffee">Black Coffee</option>
-          <option value="Black Tea">Black Tea</option>
-          <option value="Water">Water</option>
-        </select>
-
-        <div id="sugarGroup-${id}">
-          <label for="sugar-${id}">Sugar Preference:</label>
-          <select id="sugar-${id}">
-            <option value="With Sugar">With Sugar</option>
-            <option value="Without Sugar">Without Sugar</option>
-          </select>
-        </div>
-
-        <label for="instructions-${id}">Special Instructions:</label>
-        <textarea id="instructions-${id}" rows="2" placeholder="e.g. extra hot, almond milk..."></textarea>
-      `;
-
-      container.appendChild(guestDiv);
+      guestContainer.appendChild(newBlock);
     }
 
-    function toggleSugar(id) {
-      const drink = document.getElementById(`drink-${id}`).value;
-      const sugarGroup = document.getElementById(`sugarGroup-${id}`);
-      sugarGroup.style.display = (drink === 'Water') ? 'none' : 'block';
-    }
+    document.getElementById('orderForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      
+      const guests = [];
+      const blocks = document.querySelectorAll('.guest-block');
 
-    async function submitOrders() {
-      const guestBlocks = document.querySelectorAll('.guest-block');
-      const endpoint = 'https://script.google.com/macros/s/AKfycbxtxtTr1ip8o9M9OS26PeUFxTjha3CuA8-oIogU-VVzLim9329ff7gy8FdUrgW3jcabtg/exec'; // Replace with your Apps Script Web App URL
+      blocks.forEach(block => {
+        const name = block.querySelector('input[name="name"]').value;
+        const drink = block.querySelector('select[name="drink"]').value;
+        const sugarEl = block.querySelector('select[name="sugar"]');
+        const sugar = sugarEl && sugarEl.style.display !== 'none' ? sugarEl.value : 'No Sugar';
+        const instructions = block.querySelector('textarea[name="instructions"]').value;
 
-      for (let i = 0; i < guestBlocks.length; i++) {
-        const block = guestBlocks[i];
-        const id = block.id.split('-')[1];
+        guests.push({ name, drink, sugar, instructions });
+      });
 
-        const name = document.getElementById(`name-${id}`).value.trim();
-        const drink = document.getElementById(`drink-${id}`).value;
-        const sugar = (drink === 'Water') ? 'No Sugar' : document.getElementById(`sugar-${id}`).value;
-        const instructions = document.getElementById(`instructions-${id}`).value.trim();
+      try {
+        const response = await fetch(scriptURL, {
+          method: 'POST',
+          body: JSON.stringify(guests),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-        if (!name) {
-          alert(`Please enter the name for Guest ${i + 1}`);
-          return;
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          alert('Order submitted successfully!');
+          document.getElementById('orderForm').reset();
+        } else {
+          throw new Error();
         }
-
-        const data = { name, drink, sugar, instructions };
-
-        try {
-          await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-          });
-        } catch (err) {
-          alert('Error submitting the order. Please try again.');
-          return;
-        }
+      } catch (error) {
+        alert('Error submitting the order. Please try again.');
+        console.error(error);
       }
-
-      alert('All orders submitted successfully!');
-      location.reload();
-    }
-
-    // Initialize with one guest
-    window.onload = addGuest;
+    });
   </script>
 </body>
 </html>
