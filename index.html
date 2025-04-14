@@ -1,40 +1,5 @@
-const sheetDBUrl = "https://sheetdb.io/api/v1/abc123xyz"; // replace with your actual SheetDB URL
-
-document.getElementById('orderForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
-
-  const guests = [];
-  const blocks = document.querySelectorAll('.guest-block');
-
-  blocks.forEach(block => {
-    const name = block.querySelector('input[name="name"]').value;
-    const drink = block.querySelector('select[name="drink"]').value;
-    const sugarEl = block.querySelector('select[name="sugar"]');
-    const sugar = sugarEl && sugarEl.style.display !== 'none' ? sugarEl.value : 'No Sugar';
-    const instructions = block.querySelector('textarea[name="instructions"]').value;
-
-    guests.push({
-      timestamp: new Date().toISOString(),
-      name,
-      drink,
-      sugar,
-      instructions
-    });
-  });
-
-  try {
-    for (let guest of guests) {
-      await fetch(sheetDBUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: guest })
-      });
-    }
-
-    alert("Order submitted successfully!");
-    document.getElementById("orderForm").reset();
-  } catch (error) {
-    alert("Something went wrong. Please try again.");
-    console.error(error);
-  }
-});
+<iframe 
+  src="https://docs.google.com/forms/d/e/https://forms.gle/EUbjrVt3kvEsJVzm6/viewform?embedded=true" 
+  width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0">
+  Loading…
+</iframe>
