@@ -1,153 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Guest Refreshment Order</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-      margin: 0;
-    }
-    .container {
-      max-width: 500px;
-      margin: 50px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    h1, h2 {
-      text-align: center;
-      color: #333;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 15px;
-      color: #333;
-    }
-    input, select, textarea, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #25d366;
-      color: white;
-      border: none;
-      margin-top: 20px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #1ebe5d;
-    }
-    .info-message {
-      font-size: 16px;
-      text-align: center;
-      margin-bottom: 20px;
-      color: #666;
-    }
-    .guest-block {
-      border: 1px dashed #ccc;
-      padding: 15px;
-      margin-top: 20px;
-      border-radius: 8px;
-      background: #fafafa;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Welcome to Emotron</h1>
-    <h2>Please place your refreshment order</h2>
+<script>
+  let guestCount = 0;
 
-    <div class="info-message">
-      <p>By submitting this form, you will be using your WhatsApp account to place your order.</p>
-    </div>
+  function addGuest() {
+    guestCount++;
+    const container = document.getElementById("guestContainer");
 
-    <form id="orderForm">
-      <div id="guestContainer"></div>
+    const guestDiv = document.createElement("div");
+    guestDiv.className = "guest-block";
+    const blockId = `guest-${guestCount}`;
+    
+    guestDiv.innerHTML = `
+      <label>Guest ${guestCount} Name:</label>
+      <input type="text" name="name" placeholder="Enter guest name" required />
 
-      <button type="button" onclick="addGuest()">+ Add Guest</button>
-      <button type="submit">Submit via WhatsApp</button>
-    </form>
-  </div>
+      <label>Choose drink:</label>
+      <select name="drink" onchange="toggleSugar(this)">
+        <option value="Cappuccino">Cappuccino</option>
+        <option value="Flat White">Flat White</option>
+        <option value="Americano">Americano</option>
+        <option value="Espresso">Espresso</option>
+        <option value="Black Coffee">Black Coffee</option>
+        <option value="Black Tea">Black Tea</option>
+        <option value="Water">Water</option>
+      </select>
 
-  <script>
-    let guestCount = 0;
-
-    function addGuest() {
-      guestCount++;
-      const container = document.getElementById("guestContainer");
-
-      const guestDiv = document.createElement("div");
-      guestDiv.className = "guest-block";
-      guestDiv.innerHTML = `
-        <label>Guest ${guestCount} Name:</label>
-        <input type="text" name="name" placeholder="Enter guest name" required />
-
-        <label>Choose drink:</label>
-        <select name="drink" onchange="toggleSugar(this)">
-          <option value="Cappuccino">Cappuccino</option>
-          <option value="Flat White">Flat White</option>
-          <option value="Americano">Americano</option>
-          <option value="Espresso">Espresso</option>
-          <option value="Black Coffee">Black Coffee</option>
-          <option value="Black Tea">Black Tea</option>
-          <option value="Water">Water</option>
-        </select>
-
+      <div class="sugar-block">
         <label>Sugar preference:</label>
         <select name="sugar">
           <option value="With Sugar">With Sugar</option>
           <option value="Without Sugar">Without Sugar</option>
         </select>
-      `;
-      container.appendChild(guestDiv);
+      </div>
+    `;
+    container.appendChild(guestDiv);
+  }
+
+  // Add one guest by default
+  addGuest();
+
+  function toggleSugar(selectEl) {
+    const sugarBlock = selectEl.closest(".guest-block").querySelector(".sugar-block");
+    if (selectEl.value === "Water") {
+      sugarBlock.style.display = "none";
+    } else {
+      sugarBlock.style.display = "block";
     }
+  }
 
-    // Add first guest block by default
-    addGuest();
+  document.getElementById("orderForm").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-    function toggleSugar(selectEl) {
-      const sugarSelect = selectEl.parentElement.nextElementSibling.nextElementSibling;
-      if (selectEl.value === "Water") {
-        sugarSelect.style.display = "none";
-        sugarSelect.previousElementSibling.style.display = "none";
-      } else {
-        sugarSelect.style.display = "block";
-        sugarSelect.previousElementSibling.style.display = "block";
+    const phone = '971529436936'; // Update as needed
+    const guestBlocks = document.querySelectorAll(".guest-block");
+    let message = "New Guest Refreshment Orders:%0A";
+
+    guestBlocks.forEach((block, index) => {
+      const name = block.querySelector('input[name="name"]').value.trim();
+      const drink = block.querySelector('select[name="drink"]').value;
+      const sugarBlock = block.querySelector('.sugar-block');
+      const sugar = sugarBlock.style.display !== "none"
+        ? sugarBlock.querySelector('select[name="sugar"]').value
+        : null;
+
+      if (name) {
+        message += `%0AGuest ${index + 1}:%0AName: ${name}%0ADrink: ${drink}`;
+        if (sugar) message += `%0ASugar: ${sugar}`;
+        message += `%0A------------------`;
       }
-    }
-
-    document.getElementById("orderForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const phone = '971529436936'; // Replace with your WhatsApp number
-      const guestBlocks = document.querySelectorAll(".guest-block");
-      let message = "New Guest Refreshment Orders:%0A";
-
-      guestBlocks.forEach((block, index) => {
-        const name = block.querySelector('input[name="name"]').value.trim();
-        const drink = block.querySelector('select[name="drink"]').value;
-        const sugarEl = block.querySelector('select[name="sugar"]');
-        const sugar = sugarEl && sugarEl.offsetParent !== null ? sugarEl.value : "No Sugar";
-
-        if (name) {
-          message += `%0AGuest ${index + 1}:%0AName: ${name}%0ADrink: ${drink}%0ASugar: ${sugar}%0A------------------`;
-        }
-      });
-
-      const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
-      window.open(url, '_blank');
     });
-  </script>
-</body>
-</html>
+
+    const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  });
+</script>
