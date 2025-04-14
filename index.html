@@ -12,7 +12,7 @@
       margin: 0;
     }
     .container {
-      max-width: 450px;
+      max-width: 500px;
       margin: 50px auto;
       background: white;
       padding: 30px;
@@ -26,13 +26,13 @@
     label {
       font-weight: bold;
       display: block;
-      margin-top: 20px;
+      margin-top: 15px;
       color: #333;
     }
-    input, select, button {
+    input, select, textarea, button {
       width: 100%;
       padding: 10px;
-      margin-top: 10px;
+      margin-top: 8px;
       font-size: 16px;
       border-radius: 5px;
       border: 1px solid #ccc;
@@ -41,7 +41,7 @@
       background-color: #25d366;
       color: white;
       border: none;
-      margin-top: 30px;
+      margin-top: 20px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -54,6 +54,13 @@
       margin-bottom: 20px;
       color: #666;
     }
+    .guest-block {
+      border: 1px dashed #ccc;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
   </style>
 </head>
 <body>
@@ -61,69 +68,86 @@
     <h1>Welcome to Emotron</h1>
     <h2>Please place your refreshment order</h2>
 
-    <!-- Info message about using WhatsApp -->
     <div class="info-message">
       <p>By submitting this form, you will be using your WhatsApp account to place your order.</p>
     </div>
 
     <form id="orderForm">
-      <label for="name">Your Name:</label>
-      <input type="text" id="name" placeholder="Enter your name" required />
+      <div id="guestContainer"></div>
 
-      <label for="drink">Choose your drink:</label>
-      <select id="drink" name="drink" onchange="toggleSugar()">
-        <option value="Cappuccino">Cappuccino</option>
-        <option value="Flat White">Flat White</option>
-        <option value="Americano">Americano</option>
-        <option value="Espresso">Espresso</option>
-        <option value="Black Coffee">Black Coffee</option>
-        <option value="Black Tea">Black Tea</option>
-        <option value="Water">Water</option>
-      </select>
-
-      <label for="sugar" id="sugarLabel">Sugar preference:</label>
-      <select id="sugar" name="sugar">
-        <option value="With Sugar">With Sugar</option>
-        <option value="Without Sugar">Without Sugar</option>
-      </select>
-
-      <button type="button" onclick="sendOrder()">Submit Order</button>
+      <button type="button" onclick="addGuest()">+ Add Guest</button>
+      <button type="submit">Submit via WhatsApp</button>
     </form>
   </div>
 
   <script>
-    function toggleSugar() {
-      const drink = document.getElementById('drink').value;
-      const sugarLabel = document.getElementById('sugarLabel');
-      const sugar = document.getElementById('sugar');
-      
-      if (drink === "Water") {
-        sugarLabel.style.display = "none";
-        sugar.style.display = "none";
+    let guestCount = 0;
+
+    function addGuest() {
+      guestCount++;
+      const container = document.getElementById("guestContainer");
+
+      const guestDiv = document.createElement("div");
+      guestDiv.className = "guest-block";
+      guestDiv.innerHTML = `
+        <label>Guest ${guestCount} Name:</label>
+        <input type="text" name="name" placeholder="Enter guest name" required />
+
+        <label>Choose drink:</label>
+        <select name="drink" onchange="toggleSugar(this)">
+          <option value="Cappuccino">Cappuccino</option>
+          <option value="Flat White">Flat White</option>
+          <option value="Americano">Americano</option>
+          <option value="Espresso">Espresso</option>
+          <option value="Black Coffee">Black Coffee</option>
+          <option value="Black Tea">Black Tea</option>
+          <option value="Water">Water</option>
+        </select>
+
+        <label>Sugar preference:</label>
+        <select name="sugar">
+          <option value="With Sugar">With Sugar</option>
+          <option value="Without Sugar">Without Sugar</option>
+        </select>
+      `;
+      container.appendChild(guestDiv);
+    }
+
+    // Add first guest block by default
+    addGuest();
+
+    function toggleSugar(selectEl) {
+      const sugarSelect = selectEl.parentElement.nextElementSibling.nextElementSibling;
+      if (selectEl.value === "Water") {
+        sugarSelect.style.display = "none";
+        sugarSelect.previousElementSibling.style.display = "none";
       } else {
-        sugarLabel.style.display = "block";
-        sugar.style.display = "block";
+        sugarSelect.style.display = "block";
+        sugarSelect.previousElementSibling.style.display = "block";
       }
     }
 
-    function sendOrder() {
-      const name = document.getElementById('name').value.trim();
-      const drink = document.getElementById('drink').value;
-      const sugar = drink === "Water" ? "No Sugar" : document.getElementById('sugar').value;
+    document.getElementById("orderForm").addEventListener("submit", function(e) {
+      e.preventDefault();
 
-      if (!name) {
-        alert('Please enter your name!');
-        return;
-      }
+      const phone = '971529436936'; // Replace with your WhatsApp number
+      const guestBlocks = document.querySelectorAll(".guest-block");
+      let message = "New Guest Refreshment Orders:%0A";
 
-      const message = `New Guest Order:%0AName: ${name}%0ADrink: ${drink}%0ASugar: ${sugar}`;
-      
-      // WhatsApp API URL (this needs to be dynamic)
-      const phone = '971529436936'; // Replace with your staff's WhatsApp number
+      guestBlocks.forEach((block, index) => {
+        const name = block.querySelector('input[name="name"]').value.trim();
+        const drink = block.querySelector('select[name="drink"]').value;
+        const sugarEl = block.querySelector('select[name="sugar"]');
+        const sugar = sugarEl && sugarEl.offsetParent !== null ? sugarEl.value : "No Sugar";
 
-      const url = `https://api.whatsapp.com/send?phone=${phone}&text=${message}`;
+        if (name) {
+          message += `%0AGuest ${index + 1}:%0AName: ${name}%0ADrink: ${drink}%0ASugar: ${sugar}%0A------------------`;
+        }
+      });
+
+      const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
-    }
+    });
   </script>
 </body>
 </html>
